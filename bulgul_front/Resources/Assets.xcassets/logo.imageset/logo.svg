@@ -1,0 +1,30 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="48" height="48" rx="12" fill="#090514"/>
+
+  <path d="M14 12H24C31 12 36 17 36 24C36 31 31 36 24 36H14V12Z" fill="url(#baseGrad)"/>
+
+  <path d="M14 12H24C31 12 36 17 36 24C30 20 24 19 14 19V12Z" fill="url(#lightGrad)" opacity="0.6"/>
+
+  <path d="M14 36H24C31 36 36 31 36 24C30 28 24 29 14 29V36Z" fill="url(#shadowGrad)" opacity="0.5"/>
+
+  <path d="M18 30L30 18" stroke="#090514" stroke-width="3" stroke-linecap="round"/>
+
+  <defs>
+    <linearGradient id="baseGrad" x1="14" y1="12" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6EE7B7"/>
+      <stop offset="35%" stop-color="#3B82F6"/>
+      <stop offset="70%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+
+    <linearGradient id="lightGrad" x1="14" y1="12" x2="30" y2="24" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="shadowGrad" x1="24" y1="24" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </linearGradient>
+  </defs>
+</svg>
