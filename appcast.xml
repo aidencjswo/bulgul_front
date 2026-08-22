@@ -5,6 +5,20 @@
     <link>https://raw.githubusercontent.com/aidencjswo/bulgul_front/main/appcast.xml</link>
     <description>bulgul 앱 자동 업데이트 피드</description>
     <language>ko</language>
+    <item>
+      <title>버전 1.1</title>
+      <sparkle:version>2</sparkle:version>
+      <sparkle:shortVersionString>1.1</sparkle:shortVersionString>
+      <description><![CDATA[ 한글 로컬라이징 수정, 자동 업데이트(Sparkle) 추가, 앱/메뉴바 아이콘 변경 ]]></description>
+      <pubDate>Sat, 22 Aug 2026 23:44:07 +0900</pubDate>
+      <enclosure
+        url="https://github.com/aidencjswo/bulgul_front/releases/download/v1.1/bulgul_front-1.1.dmg"
+        sparkle:version="2"
+        sparkle:shortVersionString="1.1"
+        length="1882535"
+        type="application/octet-stream"
+        sparkle:edSignature="RKJ1W5GDrYMxJ72ATtpUxYnXcaId47Fo3QWRBie82Kwef8rdiEpUncwXk/KrbAHdtMTDWaVl6rwPxFq/51mMBQ==" />
+    </item>
     <!--
       새 버전을 배포할 때마다 아래 형식으로 <item>을 이 위치에 하나씩 추가하세요.
       (최신 버전이 맨 위로 오도록)

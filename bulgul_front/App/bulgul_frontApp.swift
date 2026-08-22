@@ -13,14 +13,19 @@ import Sparkle
 struct MainApp : App {
 
     @State private var token : String? = nil
+    @State private var updaterController: SPUStandardUpdaterController
 
     private let keychainTokenStore = KeychainTokenStore()
-    private let updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
 
     init() {
+        // 시스템 언어와 무관하게 항상 한글 UI(Sparkle 업데이트 창 포함)로 표시
+        // Sparkle이 언어 리소스를 고르기 전에 먼저 설정되어야 함
+        UserDefaults.standard.set(["ko"], forKey: "AppleLanguages")
+
         // 앱 시작 시 Keychain에서 토큰 로드
         let savedToken = keychainTokenStore.load()
         _token = State(initialValue: savedToken)
+        _updaterController = State(initialValue: SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil))
 
         // 컴퓨터를 껐다 켜도(로그인 시) 앱이 자동으로 실행되도록 등록
         if SMAppService.mainApp.status != .enabled {
