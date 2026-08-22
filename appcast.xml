@@ -6,6 +6,20 @@
     <description>bulgul 앱 자동 업데이트 피드</description>
     <language>ko</language>
     <item>
+      <title>버전 1.2</title>
+      <sparkle:version>3</sparkle:version>
+      <sparkle:shortVersionString>1.2</sparkle:shortVersionString>
+      <description><![CDATA[ 일정 메뉴 추가 ]]></description>
+      <pubDate>Sun, 23 Aug 2026 00:02:00 +0900</pubDate>
+      <enclosure
+        url="https://github.com/aidencjswo/bulgul_front/releases/download/v1.2/bulgul_front-1.2.dmg"
+        sparkle:version="3"
+        sparkle:shortVersionString="1.2"
+        length="1612031"
+        type="application/octet-stream"
+        sparkle:edSignature="cN5IhMN6OS9zcslvRhOK0ztjv32Dea4u0N1RuzH3IKTV4cLAAHUqtPabxdgVCDPGvd7Vz7ptVcMs63TpbUsLCw==" />
+    </item>
+    <item>
       <title>버전 1.1</title>
       <sparkle:version>2</sparkle:version>
       <sparkle:shortVersionString>1.1</sparkle:shortVersionString>

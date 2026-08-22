@@ -35,6 +35,13 @@ struct MenuButtonsView: View {
                 MenuItemButton(icon: "note.text", title: "메모") {
                     currentScreen = .memo
                 }
+
+                Divider()
+                    .padding(.leading, 40)
+
+                MenuItemButton(icon: "calendar", title: "일정") {
+                    currentScreen = .schedule
+                }
             }
             .background(Color(NSColor.controlBackgroundColor))
             .cornerRadius(8)

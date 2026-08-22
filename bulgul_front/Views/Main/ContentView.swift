@@ -10,6 +10,7 @@ enum MenuScreen: Equatable {
     case createTip
     case chatGPT
     case memo
+    case schedule
 
     static func == (lhs: MenuScreen, rhs: MenuScreen) -> Bool {
         switch (lhs, rhs) {
@@ -19,7 +20,8 @@ enum MenuScreen: Equatable {
              (.mainContent, .mainContent),
              (.createTip, .createTip),
              (.chatGPT, .chatGPT),
-             (.memo, .memo):
+             (.memo, .memo),
+             (.schedule, .schedule):
             return true
         case (.detailConents(let lhsTip), .detailConents(let rhsTip)):
             return lhsTip.id == rhsTip.id
@@ -66,6 +68,8 @@ struct ContentView: View {
                     ChatGPTWebView(currentScreen: $currentScreen, coordinator: chatGPTCoordinator)
                 case .memo:
                     MemoView(token: $token, currentScreen: $currentScreen)
+                case .schedule:
+                    ScheduleView(token: $token, currentScreen: $currentScreen)
                 }
             }
         }
