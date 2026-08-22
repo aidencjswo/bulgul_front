@@ -112,7 +112,7 @@ struct LoginFormView: View {
                     isLoading = false
                     
                     if let token_f = response.token, !token_f.isEmpty {
-                        currentScreen = .mainContent
+                        currentScreen = .menu
                         keychainTokenStore.save(token_f)
                         token = token_f
                     } else {

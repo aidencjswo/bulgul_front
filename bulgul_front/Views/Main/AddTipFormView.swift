@@ -51,7 +51,7 @@ struct AddTipFormView: View {
             // 헤더
             HStack {
                 Button(action: {
-                    currentScreen = .mainContent
+                    currentScreen = .menu
                 }) {
                     Image(systemName: "chevron.left")
                         .font(.title3)

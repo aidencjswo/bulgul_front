@@ -9,6 +9,7 @@ enum MenuScreen: Equatable {
     case detailConents(TipsResponse)
     case createTip
     case chatGPT
+    case memo
 
     static func == (lhs: MenuScreen, rhs: MenuScreen) -> Bool {
         switch (lhs, rhs) {
@@ -17,7 +18,8 @@ enum MenuScreen: Equatable {
              (.signup, .signup),
              (.mainContent, .mainContent),
              (.createTip, .createTip),
-             (.chatGPT, .chatGPT):
+             (.chatGPT, .chatGPT),
+             (.memo, .memo):
             return true
         case (.detailConents(let lhsTip), .detailConents(let rhsTip)):
             return lhsTip.id == rhsTip.id
@@ -43,21 +45,28 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            switch currentScreen {
-            case .menu:
-                MenuButtonsView(token: $token, currentScreen: $currentScreen)
-            case .login:
+            // 로그인 안 된 상태면 signup 화면을 제외한 나머지 화면은 절대 노출하지 않음
+            if token?.isEmpty != false && currentScreen != .signup {
                 LoginFormView(token: $token, currentScreen: $currentScreen)
-            case .signup:
-                SignUpFormView(token: $token, currentScreen: $currentScreen)
-            case .mainContent:
-                MainContentsView(token: $token, currentScreen: $currentScreen)
-            case .detailConents(let selectedTip):
-                DetailContentsView(token: $token, currentScreen: $currentScreen, selectedTip: selectedTip)
-            case .createTip:
-                AddTipFormView(token: $token, currentScreen: $currentScreen)
-            case .chatGPT:
-                ChatGPTWebView(currentScreen: $currentScreen, coordinator: chatGPTCoordinator)
+            } else {
+                switch currentScreen {
+                case .menu:
+                    MenuButtonsView(token: $token, currentScreen: $currentScreen)
+                case .login:
+                    LoginFormView(token: $token, currentScreen: $currentScreen)
+                case .signup:
+                    SignUpFormView(token: $token, currentScreen: $currentScreen)
+                case .mainContent:
+                    MainContentsView(token: $token, currentScreen: $currentScreen)
+                case .detailConents(let selectedTip):
+                    DetailContentsView(token: $token, currentScreen: $currentScreen, selectedTip: selectedTip)
+                case .createTip:
+                    AddTipFormView(token: $token, currentScreen: $currentScreen)
+                case .chatGPT:
+                    ChatGPTWebView(currentScreen: $currentScreen, coordinator: chatGPTCoordinator)
+                case .memo:
+                    MemoView(token: $token, currentScreen: $currentScreen)
+                }
             }
         }
         // 토큰이 만료(401)되면 어느 화면에 있든 로그인 전 상태로 되돌림

@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import ServiceManagement
+import Sparkle
 
 @main
 struct MainApp : App {
@@ -13,19 +15,25 @@ struct MainApp : App {
     @State private var token : String? = nil
 
     private let keychainTokenStore = KeychainTokenStore()
+    private let updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
 
     init() {
         // 앱 시작 시 Keychain에서 토큰 로드
         let savedToken = keychainTokenStore.load()
         _token = State(initialValue: savedToken)
+
+        // 컴퓨터를 껐다 켜도(로그인 시) 앱이 자동으로 실행되도록 등록
+        if SMAppService.mainApp.status != .enabled {
+            try? SMAppService.mainApp.register()
+        }
     }
 
     var body : some Scene {
 
         // .menu 스타일은 진짜 NSMenu라서, .window 스타일과 달리
         // "메뉴바 자동 숨김" 설정에 영향을 안 받음
-        MenuBarExtra("bulgul", systemImage: "star.fill") {
-            MenuBarDropdownView()
+        MenuBarExtra("bulgul", image: "menuBarIcon") {
+            MenuBarDropdownView(updaterController: updaterController)
         }
         .menuBarExtraStyle(.menu)
 
@@ -41,11 +49,16 @@ struct MainApp : App {
 
 private struct MenuBarDropdownView: View {
     @Environment(\.openWindow) private var openWindow
+    let updaterController: SPUStandardUpdaterController
 
     var body: some View {
         Button("열기") {
             NSApp.activate(ignoringOtherApps: true)
             openWindow(id: "main")
+        }
+
+        Button("업데이트 확인...") {
+            updaterController.checkForUpdates(nil)
         }
 
         Divider()

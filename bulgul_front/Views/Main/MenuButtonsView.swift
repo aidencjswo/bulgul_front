@@ -28,13 +28,18 @@ struct MenuButtonsView: View {
                 MenuItemButton(icon: "plus.circle", title: "팁 추가") {
                     currentScreen = .createTip
                 }
+
+                Divider()
+                    .padding(.leading, 40)
+
+                MenuItemButton(icon: "note.text", title: "메모") {
+                    currentScreen = .memo
+                }
             }
             .background(Color(NSColor.controlBackgroundColor))
             .cornerRadius(8)
             .padding(.horizontal, 8)
             .padding(.top, 8)
-
-            Spacer()
 
             // 하단 - 로그아웃과 종료
             Rectangle()
@@ -87,6 +92,7 @@ struct MenuButtonsView: View {
             .padding(.bottom, 8)
         }
         .frame(minWidth: 300, maxWidth: 500)
+        .fixedSize(horizontal: false, vertical: true)
         .padding(.vertical, 8)
         .onAppear {
             // 로그인 안 된 상태로 이 화면에 오면 바로 로그인 화면으로 보냄
