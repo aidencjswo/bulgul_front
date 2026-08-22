@@ -15,9 +15,9 @@
         url="https://github.com/aidencjswo/bulgul_front/releases/download/v1.1/bulgul_front-1.1.dmg"
         sparkle:version="2"
         sparkle:shortVersionString="1.1"
-        length="1882535"
+        length="1882764"
         type="application/octet-stream"
-        sparkle:edSignature="RKJ1W5GDrYMxJ72ATtpUxYnXcaId47Fo3QWRBie82Kwef8rdiEpUncwXk/KrbAHdtMTDWaVl6rwPxFq/51mMBQ==" />
+        sparkle:edSignature="cs51MKTUHXLGC8zFIvB/uugJtQCp5VYTr/2n1UU0Ody8U+bg/rvbFL/ARc7WWtLhE1RLF3ttBxZ1GwBzzSE6CQ==" />
     </item>
     <!--
       새 버전을 배포할 때마다 아래 형식으로 <item>을 이 위치에 하나씩 추가하세요.
