@@ -23,6 +23,29 @@ private struct APIErrorBody: Decodable {
     let detail: String?
 }
 
+// URLSession의 업로드 진행률 콜백을 받아서 넘겨주는 델리게이트
+private class UploadProgressDelegate: NSObject, URLSessionTaskDelegate {
+    let onProgress: (Double) -> Void
+
+    init(onProgress: @escaping (Double) -> Void) {
+        self.onProgress = onProgress
+    }
+
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        didSendBodyData bytesSent: Int64,
+        totalBytesSent: Int64,
+        totalBytesExpectedToSend: Int64
+    ) {
+        guard totalBytesExpectedToSend > 0 else { return }
+        let fraction = Double(totalBytesSent) / Double(totalBytesExpectedToSend)
+        Task { @MainActor in
+            onProgress(fraction)
+        }
+    }
+}
+
 class NetworkClient {
     static let shared = NetworkClient()
     private init() {}
@@ -59,34 +82,30 @@ class NetworkClient {
         try await performRequest(path: path, method: method, body: body)
     }
 
-    // 파일 하나를 multipart/form-data로 업로드
-    func uploadFile(path: String, fileURL: URL) async throws -> Data {
-        guard let url = URL(string: baseURL + path) else {
+    // 파일 하나를 원본 바이트 스트림으로 업로드 (onProgress: 0.0~1.0 진행률 콜백)
+    // 디스크에서 직접 읽어서 전송하기 때문에 대용량 파일도 메모리에 통째로 안 올라감.
+    // 백엔드가 이 요청을 받는 대로 바로 파일 서버로 흘려보내기 때문에, 여기서 측정하는
+    // "보낸 바이트 수"가 실제 전체 파이프라인의 진행 속도를 그대로 반영함
+    func uploadFile(path: String, fileURL: URL, onProgress: ((Double) -> Void)? = nil) async throws -> Data {
+        guard var components = URLComponents(string: baseURL + path) else {
+            throw URLError(.badURL)
+        }
+        components.queryItems = [URLQueryItem(name: "filename", value: fileURL.lastPathComponent)]
+
+        guard let url = components.url else {
             throw URLError(.badURL)
         }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-
-        let boundary = "Boundary-\(UUID().uuidString)"
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
 
         if let token = token {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 
-        let fileData = try Data(contentsOf: fileURL)
-        let filename = fileURL.lastPathComponent
-
-        var body = Data()
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
-        body.append("Content-Type: application/octet-stream\r\n\r\n".data(using: .utf8)!)
-        body.append(fileData)
-        body.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
-        request.httpBody = body
-
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let delegate = onProgress.map { UploadProgressDelegate(onProgress: $0) }
+        let (data, response) = try await URLSession.shared.upload(for: request, fromFile: fileURL, delegate: delegate)
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw URLError(.badServerResponse)

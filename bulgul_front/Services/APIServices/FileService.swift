@@ -20,8 +20,8 @@ class FileService {
         try await NetworkClient.shared.request(path: "/api/api_v1/files", method: "GET")
     }
 
-    func uploadFile(fileURL: URL) async throws {
-        try await NetworkClient.shared.uploadFile(path: "/api/api_v1/files", fileURL: fileURL)
+    func uploadFile(fileURL: URL, onProgress: ((Double) -> Void)? = nil) async throws {
+        try await NetworkClient.shared.uploadFile(path: "/api/api_v1/files", fileURL: fileURL, onProgress: onProgress)
     }
 
     func downloadFile(filename: String) async throws -> Data {
