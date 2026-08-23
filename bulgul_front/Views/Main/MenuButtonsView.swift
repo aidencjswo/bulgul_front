@@ -11,6 +11,13 @@ struct MenuButtonsView: View {
         VStack(spacing: 0) {
             // 이 화면은 로그인 상태에서만 보임 (로그인 전이면 onAppear에서 바로 .login으로 보냄)
             VStack(spacing: 0) {
+                MenuItemButton(icon: "plus.circle", title: "팁 추가") {
+                    currentScreen = .createTip
+                }
+
+                Divider()
+                    .padding(.leading, 40)
+
                 MenuItemButton(icon: "list.bullet.rectangle", title: "단축키 조회") {
                     currentScreen = .mainContent
                 }
@@ -20,13 +27,6 @@ struct MenuButtonsView: View {
 
                 MenuItemButton(icon: "bubble.left.and.text.bubble.right", title: "ChatGPT") {
                     currentScreen = .chatGPT
-                }
-
-                Divider()
-                    .padding(.leading, 40)
-
-                MenuItemButton(icon: "plus.circle", title: "팁 추가") {
-                    currentScreen = .createTip
                 }
 
                 Divider()
