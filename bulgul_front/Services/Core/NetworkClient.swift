@@ -27,6 +27,13 @@ class NetworkClient {
     static let shared = NetworkClient()
     private init() {}
 
+    // Xcode에서 직접 실행(Debug)하면 로컬 테스트 서버를, Archive로 만든 배포용 빌드(Release)는 운영 서버를 사용
+    #if DEBUG
+    private let baseURL = "http://localhost:8000"
+    #else
+    private let baseURL = "https://bulguldesign.com"
+    #endif
+
     // Keychain에서 토큰 가져오기
     private var token: String? {
         KeychainTokenStore().load()
@@ -52,13 +59,60 @@ class NetworkClient {
         try await performRequest(path: path, method: method, body: body)
     }
 
+    // 파일 하나를 multipart/form-data로 업로드
+    func uploadFile(path: String, fileURL: URL) async throws -> Data {
+        guard let url = URL(string: baseURL + path) else {
+            throw URLError(.badURL)
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+
+        let boundary = "Boundary-\(UUID().uuidString)"
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+        if let token = token {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+
+        let fileData = try Data(contentsOf: fileURL)
+        let filename = fileURL.lastPathComponent
+
+        var body = Data()
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
+        body.append("Content-Type: application/octet-stream\r\n\r\n".data(using: .utf8)!)
+        body.append(fileData)
+        body.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+        request.httpBody = body
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
+        }
+
+        if httpResponse.statusCode == 401 {
+            KeychainTokenStore().delete()
+            NotificationCenter.default.post(name: .authTokenExpired, object: nil)
+            throw URLError(.userAuthenticationRequired)
+        }
+
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let detail = try? JSONDecoder().decode(APIErrorBody.self, from: data).detail
+            throw APIError(statusCode: httpResponse.statusCode, detail: detail)
+        }
+
+        return data
+    }
+
     private func performRequest(
         path: String,
         method: String,
         body: Encodable?
     ) async throws -> Data {
         // 1. URL 생성
-        guard let url = URL(string: "https://bulguldesign.com" + path) else {
+        guard let url = URL(string: baseURL + path) else {
             throw URLError(.badURL)
         }
 

@@ -24,7 +24,6 @@ struct AddTipFormView: View {
     @State private var showFullForm = false
     
     // 폼 상태 변수
-    @State private var idString = ""
     @State private var title = ""
     @State private var category = "Ai"
     @State private var subcategory = ""
@@ -171,15 +170,6 @@ struct AddTipFormView: View {
                         
                         // 주 입력 폼들
                         VStack(alignment: .leading, spacing: 9) {
-                            // ID 입력
-                            HStack {
-                                Text("단축키 ID:")
-                                    .font(.caption)
-                                    .frame(width: 80, alignment: .leading)
-                                TextField("숫자 입력 (예: 101)", text: $idString)
-                                    .textFieldStyle(.roundedBorder)
-                            }
-                            
                             // 제목 입력
                             HStack {
                                 Text("단축키 제목:")
@@ -437,18 +427,12 @@ struct AddTipFormView: View {
             return
         }
 
-        guard let tipId = Int(idString) else {
-            statusMessage = "⚠️ 올바른 숫자 ID를 입력해 주세요."
-            return
-        }
-
         let shortcuts = shortcutsString.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }
         let tags = tagsString.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }
         let steps = [step1, step2, step3].filter { !$0.isEmpty }
         let svgs = [svg1, svg2, svg3]
 
         let requestBody = SaveTipRequest(
-            id: tipId,
             title: title,
             category: category,
             subcategory: subcategory,
@@ -496,7 +480,6 @@ private struct GenerateSvgsRequest: Encodable {
 }
 
 private struct SaveTipRequest: Encodable {
-    let id: Int
     let title: String
     let category: String
     let subcategory: String
@@ -508,7 +491,7 @@ private struct SaveTipRequest: Encodable {
     let isFavorite: Bool
 
     enum CodingKeys: String, CodingKey {
-        case id, title, category, subcategory, shortcuts, description, tags, steps, svgs
+        case title, category, subcategory, shortcuts, description, tags, steps, svgs
         case isFavorite = "is_favorite"
     }
 }
