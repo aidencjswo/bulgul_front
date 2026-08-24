@@ -11,7 +11,13 @@
       <sparkle:shortVersionString>1.5</sparkle:shortVersionString>
       <description><![CDATA[ 안정성 개선 ]]></description>
       <pubDate>Mon, 24 Aug 2026 23:53:46 +0900</pubDate>
-      <link>https://github.com/aidencjswo/bulgul_front/releases/download/v1.5/bulgul_front-1.5.dmg</link>
+      <enclosure
+        url="https://github.com/aidencjswo/bulgul_front/releases/download/v1.5/bulgul_front-1.5.dmg"
+        sparkle:version="6"
+        sparkle:shortVersionString="1.5"
+        length="2057162"
+        type="application/octet-stream"
+        sparkle:edSignature="BRdJOpfIYCpNbGoISX4nFp2+zoYWMQYLRynLq1INDZtGbKlSlTFGeDW+yGPCXfLbWObYXVPzTUSG5ICnn/fkBA==" />
     </item>
     <item>
       <title>버전 1.4</title>
