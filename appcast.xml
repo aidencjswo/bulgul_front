@@ -6,6 +6,20 @@
     <description>bulgul 앱 자동 업데이트 피드</description>
     <language>ko</language>
     <item>
+      <title>버전 1.6</title>
+      <sparkle:version>7</sparkle:version>
+      <sparkle:shortVersionString>1.6</sparkle:shortVersionString>
+      <description><![CDATA[ 업데이트 실패 안내 기능 테스트 ]]></description>
+      <pubDate>Tue, 25 Aug 2026 00:10:14 +0900</pubDate>
+      <enclosure
+        url="https://github.com/aidencjswo/bulgul_front/releases/download/v1.6/bulgul_front-1.6.dmg"
+        sparkle:version="7"
+        sparkle:shortVersionString="1.6"
+        length="2057150"
+        type="application/octet-stream"
+        sparkle:edSignature="1CaCBr6ol5ppgTw8Udpf3vNhcDUNlsh+39nrtkhmLLnJk66rMWDYiSXRAG3hCasyezOf7Kgsb7kHaQD1rEUPCQ==" />
+    </item>
+    <item>
       <title>버전 1.5</title>
       <sparkle:version>6</sparkle:version>
       <sparkle:shortVersionString>1.5</sparkle:shortVersionString>
