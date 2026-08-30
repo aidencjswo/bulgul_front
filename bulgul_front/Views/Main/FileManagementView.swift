@@ -1,10 +1,21 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
+private enum FileDisplayMode: String, CaseIterable {
+    case detail = "자세히보기"
+    case preview = "미리보기"
+}
+
+// 세션 동안 한 번 받은 썸네일은 다시 안 받도록 메모리 캐시
+private class ThumbnailCache {
+    static let shared = NSCache<NSString, NSImage>()
+}
+
 struct FileManagementView: View {
     @Binding var token: String?
     @Binding var currentScreen: MenuScreen
 
+    @State private var displayMode: FileDisplayMode = .detail
     @State private var files: [FileInfo] = []
     @State private var isLoading = true
     @State private var isUploading = false
@@ -78,6 +89,14 @@ struct FileManagementView: View {
             .padding(.horizontal)
             .padding(.top)
 
+            Picker("", selection: $displayMode) {
+                ForEach(FileDisplayMode.allCases, id: \.self) { mode in
+                    Text(mode.rawValue).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
+
             if isUploading {
                 VStack(spacing: 4) {
                     ProgressView(value: uploadProgress)
@@ -115,7 +134,7 @@ struct FileManagementView: View {
                         .foregroundColor(.secondary)
                 }
                 Spacer()
-            } else {
+            } else if displayMode == .detail {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
                         ForEach(groupedFiles, id: \.day) { group in
@@ -160,6 +179,26 @@ struct FileManagementView: View {
                                         .padding(12)
                                         .background(Color(NSColor.controlBackgroundColor))
                                         .cornerRadius(10)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom)
+                }
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        ForEach(groupedFiles, id: \.day) { group in
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(dayFormatter.string(from: group.day))
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundColor(.secondary)
+
+                                LazyVGrid(columns: [GridItem(.adaptive(minimum: 84, maximum: 84), spacing: 12)], spacing: 12) {
+                                    ForEach(group.files) { file in
+                                        FileThumbnailCell(file: file, onDownload: { downloadFile(file) }, onDelete: { deleteFile(file) })
                                     }
                                 }
                             }
@@ -290,6 +329,71 @@ struct FileManagementView: View {
                     statusMessage = "⚠️ 삭제 실패: \(error.localizedDescription)"
                 }
             }
+        }
+    }
+}
+
+// 미리보기 모드의 그리드 셀 (이미지 파일이면 썸네일, 아니면 아이콘)
+private struct FileThumbnailCell: View {
+    let file: FileInfo
+    let onDownload: () -> Void
+    let onDelete: () -> Void
+
+    @State private var thumbnail: NSImage?
+    @State private var isLoading = false
+
+    private var isImage: Bool {
+        let ext = (file.filename as NSString).pathExtension.lowercased()
+        return ["png", "jpg", "jpeg", "gif", "heic", "bmp", "tiff", "webp"].contains(ext)
+    }
+
+    var body: some View {
+        VStack(spacing: 6) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color(NSColor.controlBackgroundColor))
+                    .frame(width: 80, height: 80)
+
+                if let thumbnail {
+                    Image(nsImage: thumbnail)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 80, height: 80)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                } else if isLoading {
+                    ProgressView()
+                        .scaleEffect(0.6)
+                } else {
+                    Image(systemName: isImage ? "photo" : "doc")
+                        .font(.system(size: 26))
+                        .foregroundColor(.secondary)
+                }
+            }
+
+            Text(file.filename)
+                .font(.system(size: 10))
+                .lineLimit(1)
+                .frame(width: 80)
+        }
+        .contextMenu {
+            Button("다운로드", action: onDownload)
+            Button("삭제", role: .destructive, action: onDelete)
+        }
+        .task {
+            guard isImage, thumbnail == nil else { return }
+
+            if let cached = ThumbnailCache.shared.object(forKey: file.filename as NSString) {
+                thumbnail = cached
+                return
+            }
+
+            isLoading = true
+            if let data = try? await FileService.shared.downloadFile(filename: file.filename),
+               let image = NSImage(data: data) {
+                thumbnail = image
+                ThumbnailCache.shared.setObject(image, forKey: file.filename as NSString)
+            }
+            isLoading = false
         }
     }
 }

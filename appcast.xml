@@ -6,6 +6,20 @@
     <description>bulgul 앱 자동 업데이트 피드</description>
     <language>ko</language>
     <item>
+      <title>버전 1.7</title>
+      <sparkle:version>8</sparkle:version>
+      <sparkle:shortVersionString>1.7</sparkle:shortVersionString>
+      <description><![CDATA[ 로그인 후 파일관리 진입 시 튕기는 버그 수정 (Keychain 토큰 갱신 문제), 파일관리 화면에 미리보기/자세히보기 전환 기능 추가 ]]></description>
+      <pubDate>Sun, 30 Aug 2026 15:03:21 +0900</pubDate>
+      <enclosure
+        url="https://github.com/aidencjswo/bulgul_front/releases/download/v1.7/bulgul_front-1.7.dmg"
+        sparkle:version="8"
+        sparkle:shortVersionString="1.7"
+        length="2104251"
+        type="application/octet-stream"
+        sparkle:edSignature="GD8TmdBgzKL1waJYz8r4tj+xNo+Oyy4dH7/Jd8yTxYPBzR2nW6rsfuROkXVfyJm4WSUVVPv8lUrSMBGYL4XcBQ==" />
+    </item>
+    <item>
       <title>버전 1.6</title>
       <sparkle:version>7</sparkle:version>
       <sparkle:shortVersionString>1.6</sparkle:shortVersionString>
