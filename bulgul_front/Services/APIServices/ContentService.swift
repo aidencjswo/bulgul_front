@@ -13,10 +13,17 @@ class ContentService {
     
     func getTips() async throws -> [TipsResponse] {
         // NetworkClient.shared에 요청을 위임
-        
+
         return try await NetworkClient.shared.request(
             path: "/api/api_v1/design/tips",
             method: "GET"
+        )
+    }
+
+    func deleteTip(id: Int) async throws {
+        try await NetworkClient.shared.requestWithoutDecoding(
+            path: "/api/api_v1/design/tips/\(id)",
+            method: "DELETE"
         )
     }
 }

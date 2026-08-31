@@ -399,7 +399,7 @@ struct AddTipFormView: View {
         Task {
             do {
                 let decoded: SvgResponse = try await NetworkClient.shared.request(
-                    path: "/api/generate-svgs",
+                    path: "/api/api_v1/gemini/generate-svgs",
                     method: "POST",
                     body: GenerateSvgsRequest(title: title, category: category, steps: steps)
                 )
@@ -447,7 +447,7 @@ struct AddTipFormView: View {
         Task {
             do {
                 try await NetworkClient.shared.requestWithoutDecoding(
-                    path: "/api/tips",
+                    path: "/api/api_v1/design/tips",
                     method: "POST",
                     body: requestBody
                 )

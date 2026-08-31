@@ -6,6 +6,9 @@ struct MainContentsView: View {
     
     @State private var tips: [TipsResponse] = []
     @State private var searchText: String = ""
+    @State private var pendingDeleteTip: TipsResponse? = nil
+    @State private var showDeleteConfirm = false
+    @State private var statusMessage = ""
     
     private let keychainTokenStore = KeychainTokenStore()
     
@@ -79,9 +82,16 @@ struct MainContentsView: View {
             .cornerRadius(8)
             .padding(.horizontal)
             
+            if !statusMessage.isEmpty {
+                Text(statusMessage)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal)
+            }
+
             Divider()
                 .padding(.horizontal)
-            
+
             // 메인 컨텐츠 영역
             ScrollView {
                 VStack(spacing: 12) {
@@ -126,20 +136,20 @@ struct MainContentsView: View {
                                             .background(getCategoryColor(category).opacity(0.1))
                                             .cornerRadius(8)
                                     }
-                                    
+
                                     VStack(alignment: .leading, spacing: 4) {
                                         Text(tip.title ?? "제목 없음")
                                             .font(.system(size: 14, weight: .medium))
                                             .foregroundColor(.primary)
                                             .lineLimit(1)
-                                        
+
                                         HStack(spacing: 4) {
                                             if let category = tip.category {
                                                 Text(category)
                                                     .font(.system(size: 11))
                                                     .foregroundColor(.secondary)
                                             }
-                                            
+
                                             if let subcategory = tip.subcategory {
                                                 Text("·")
                                                     .font(.system(size: 11))
@@ -150,9 +160,9 @@ struct MainContentsView: View {
                                             }
                                         }
                                     }
-                                    
+
                                     Spacer()
-                                    
+
                                     Image(systemName: "chevron.right")
                                         .font(.system(size: 12))
                                         .foregroundColor(.secondary)
@@ -162,6 +172,14 @@ struct MainContentsView: View {
                                 .cornerRadius(10)
                             }
                             .buttonStyle(.plain)
+                            .contextMenu {
+                                if tip.id != nil {
+                                    Button("삭제", role: .destructive) {
+                                        pendingDeleteTip = tip
+                                        showDeleteConfirm = true
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -190,8 +208,32 @@ struct MainContentsView: View {
                 print("에러: \(error)")
             }
         }
+        .alert("팁을 삭제하시겠습니까?", isPresented: $showDeleteConfirm, presenting: pendingDeleteTip) { tip in
+            Button("취소", role: .cancel) {}
+            Button("삭제", role: .destructive) {
+                deleteTip(tip)
+            }
+        } message: { tip in
+            Text("\"\(tip.title ?? "제목 없음")\"을(를) 삭제하면 복구할 수 없습니다.")
+        }
     }
-    
+
+    private func deleteTip(_ tip: TipsResponse) {
+        guard let id = tip.id else { return }
+        Task {
+            do {
+                try await ContentService.shared.deleteTip(id: id)
+                await MainActor.run {
+                    tips.removeAll { $0.id == id }
+                }
+            } catch {
+                await MainActor.run {
+                    statusMessage = "⚠️ 삭제 실패: \(error.localizedDescription)"
+                }
+            }
+        }
+    }
+
     // 카테고리별 아이콘 반환
     private func getCategoryIcon(_ category: String) -> String {
         switch category.lowercased() {

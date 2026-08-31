@@ -9,8 +9,6 @@ enum MenuScreen: Equatable {
     case detailConents(TipsResponse)
     case createTip
     case chatGPT
-    case memo
-    case schedule
     case fileManagement
 
     static func == (lhs: MenuScreen, rhs: MenuScreen) -> Bool {
@@ -21,8 +19,6 @@ enum MenuScreen: Equatable {
              (.mainContent, .mainContent),
              (.createTip, .createTip),
              (.chatGPT, .chatGPT),
-             (.memo, .memo),
-             (.schedule, .schedule),
              (.fileManagement, .fileManagement):
             return true
         case (.detailConents(let lhsTip), .detailConents(let rhsTip)):
@@ -68,10 +64,6 @@ struct ContentView: View {
                     AddTipFormView(token: $token, currentScreen: $currentScreen)
                 case .chatGPT:
                     ChatGPTWebView(currentScreen: $currentScreen, coordinator: chatGPTCoordinator)
-                case .memo:
-                    MemoView(token: $token, currentScreen: $currentScreen)
-                case .schedule:
-                    ScheduleView(token: $token, currentScreen: $currentScreen)
                 case .fileManagement:
                     FileManagementView(token: $token, currentScreen: $currentScreen)
                 }

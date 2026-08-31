@@ -28,7 +28,41 @@ class FileService {
         try await NetworkClient.shared.requestWithoutDecoding(path: "/api/api_v1/files/\(filename)", method: "GET")
     }
 
+    func getThumbnail(filename: String) async throws -> Data {
+        try await NetworkClient.shared.requestWithoutDecoding(path: "/api/api_v1/files/\(filename)/thumbnail", method: "GET")
+    }
+
     func deleteFile(filename: String) async throws {
         try await NetworkClient.shared.requestWithoutDecoding(path: "/api/api_v1/files/\(filename)", method: "DELETE")
     }
+
+    func getStorageUsage() async throws -> StorageUsage {
+        try await NetworkClient.shared.request(path: "/api/api_v1/files/storage", method: "GET")
+    }
+
+    func getMemo(filename: String) async throws -> String {
+        let response: FileMemoResponse = try await NetworkClient.shared.request(path: "/api/api_v1/files/\(filename)/memo", method: "GET")
+        return response.memo
+    }
+
+    func saveMemo(filename: String, memo: String) async throws {
+        try await NetworkClient.shared.requestWithoutDecoding(
+            path: "/api/api_v1/files/\(filename)/memo",
+            method: "PUT",
+            body: FileMemoRequest(memo: memo)
+        )
+    }
+}
+
+private struct FileMemoResponse: Decodable {
+    let memo: String
+}
+
+private struct FileMemoRequest: Encodable {
+    let memo: String
+}
+
+struct StorageUsage: Decodable {
+    let used: Int64
+    let limit: Int64?
 }

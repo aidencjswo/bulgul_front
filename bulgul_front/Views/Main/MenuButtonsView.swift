@@ -32,20 +32,6 @@ struct MenuButtonsView: View {
                 Divider()
                     .padding(.leading, 40)
 
-                MenuItemButton(icon: "note.text", title: "메모") {
-                    currentScreen = .memo
-                }
-
-                Divider()
-                    .padding(.leading, 40)
-
-                MenuItemButton(icon: "calendar", title: "일정") {
-                    currentScreen = .schedule
-                }
-
-                Divider()
-                    .padding(.leading, 40)
-
                 MenuItemButton(icon: "folder", title: "파일관리") {
                     currentScreen = .fileManagement
                 }
