@@ -84,16 +84,14 @@ struct DetailContentsView: View {
                                         .font(.system(size: 13, weight: .semibold))
                                 }
                                 
-                                FlowLayout(spacing: 6) {
-                                    ForEach(tip.tags.compactMap { $0 }, id: \.self) { tag in
-                                        Text("#\(tag)")
-                                            .font(.system(size: 11))
-                                            .foregroundColor(.orange)
-                                            .padding(.horizontal, 10)
-                                            .padding(.vertical, 4)
-                                            .background(Color.orange.opacity(0.1))
-                                            .cornerRadius(12)
-                                    }
+                                FlowLayout(data: tip.tags.compactMap { $0 }, id: \.self, spacing: 6) { tag in
+                                    Text("#\(tag)")
+                                        .font(.system(size: 11))
+                                        .foregroundColor(.orange)
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 4)
+                                        .background(Color.orange.opacity(0.1))
+                                        .cornerRadius(12)
                                 }
                             }
                             .padding(12)
@@ -238,54 +236,61 @@ struct DetailContentsView: View {
 }
 
 // FlowLayout - 태그를 자동으로 줄바꿈하는 레이아웃
-struct FlowLayout: Layout {
+// SwiftUI의 Layout 프로토콜은 macOS 13+ 전용이라, macOS 12까지 지원하기 위해
+// GeometryReader + alignmentGuide로 직접 줄바꿈을 계산하는 방식으로 구현함
+struct FlowLayout<Data: RandomAccessCollection, ID: Hashable, Content: View>: View {
+    let data: Data
+    let id: KeyPath<Data.Element, ID>
     var spacing: CGFloat = 8
-    
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let result = FlowResult(
-            in: proposal.replacingUnspecifiedDimensions().width,
-            subviews: subviews,
-            spacing: spacing
-        )
-        return result.size
-    }
-    
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        let result = FlowResult(
-            in: bounds.width,
-            subviews: subviews,
-            spacing: spacing
-        )
-        for (index, subview) in subviews.enumerated() {
-            subview.place(at: CGPoint(x: bounds.minX + result.positions[index].x, y: bounds.minY + result.positions[index].y), proposal: .unspecified)
+    let content: (Data.Element) -> Content
+
+    @State private var totalHeight: CGFloat = .zero
+
+    var body: some View {
+        GeometryReader { geometry in
+            generateContent(in: geometry)
         }
+        .frame(height: totalHeight)
     }
-    
-    struct FlowResult {
-        var size: CGSize = .zero
-        var positions: [CGPoint] = []
-        
-        init(in maxWidth: CGFloat, subviews: Subviews, spacing: CGFloat) {
-            var x: CGFloat = 0
-            var y: CGFloat = 0
-            var lineHeight: CGFloat = 0
-            
-            for subview in subviews {
-                let size = subview.sizeThatFits(.unspecified)
-                
-                if x + size.width > maxWidth && x > 0 {
-                    x = 0
-                    y += lineHeight + spacing
-                    lineHeight = 0
-                }
-                
-                positions.append(CGPoint(x: x, y: y))
-                lineHeight = max(lineHeight, size.height)
-                x += size.width + spacing
+
+    private func generateContent(in geometry: GeometryProxy) -> some View {
+        var x: CGFloat = 0
+        var y: CGFloat = 0
+
+        return ZStack(alignment: .topLeading) {
+            ForEach(data, id: id) { item in
+                content(item)
+                    .padding(.trailing, spacing)
+                    .padding(.bottom, spacing)
+                    .alignmentGuide(.leading) { d in
+                        if abs(x - d.width) > geometry.size.width {
+                            x = 0
+                            y -= d.height
+                        }
+                        let result = x
+                        if item[keyPath: id] == data.last?[keyPath: id] {
+                            x = 0
+                        } else {
+                            x -= d.width
+                        }
+                        return result
+                    }
+                    .alignmentGuide(.top) { _ in
+                        let result = y
+                        if item[keyPath: id] == data.last?[keyPath: id] {
+                            y = 0
+                        }
+                        return result
+                    }
             }
-            
-            self.size = CGSize(width: maxWidth, height: y + lineHeight)
         }
+        .background(
+            GeometryReader { innerGeometry in
+                Color.clear.onAppear {
+                    totalHeight = innerGeometry.size.height
+                }
+            }
+        )
     }
 }
 

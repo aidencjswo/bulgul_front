@@ -104,10 +104,25 @@ struct AddTipFormView: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
                 
-                TextField("예: 포토샵 인물 누끼 따기, 피그마 컴포넌트 복제...", text: $aiInputPrompt, axis: .vertical)
-                    .textFieldStyle(.roundedBorder)
-                    .lineLimit(3...6)
-                    .padding(.horizontal, 40)
+                // macOS 12까지 지원해야 해서 TextField(axis:)/lineLimit(range:) 대신
+                // TextEditor + 수동 플레이스홀더로 여러 줄 입력을 구현함
+                ZStack(alignment: .topLeading) {
+                    if aiInputPrompt.isEmpty {
+                        Text("예: 포토샵 인물 누끼 따기, 피그마 컴포넌트 복제...")
+                            .foregroundColor(Color(NSColor.placeholderTextColor))
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 8)
+                            .allowsHitTesting(false)
+                    }
+                    TextEditor(text: $aiInputPrompt)
+                        .frame(height: 80)
+                        .padding(.horizontal, 1)
+                }
+                .overlay(
+                    RoundedRectangle(cornerRadius: 6)
+                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                )
+                .padding(.horizontal, 40)
                 
                 Button(action: runAiSuggest) {
                     HStack {
@@ -118,8 +133,7 @@ struct AddTipFormView: View {
                         }
                         Text(isAiSuggesting ? "AI가 생성 중..." : "AI 자동완성")
                     }
-                    .font(.body)
-                    .fontWeight(.bold)
+                    .font(.body.weight(.bold))
                     .foregroundColor(.white)
                     .padding(.horizontal, 32)
                     .padding(.vertical, 12)
@@ -254,8 +268,7 @@ struct AddTipFormView: View {
                                         }
                                         Text("AI 그림 생성")
                                     }
-                                    .font(.system(size: 10))
-                                    .fontWeight(.bold)
+                                    .font(.system(size: 10, weight: .bold))
                                     .foregroundColor(.white)
                                     .padding(.horizontal, 10)
                                     .padding(.vertical, 5)
@@ -327,8 +340,7 @@ struct AddTipFormView: View {
                 Button("저장하기") {
                     saveTip()
                 }
-                .font(.body)
-                .fontWeight(.bold)
+                .font(.body.weight(.bold))
                 .foregroundColor(.white)
                 .padding(.horizontal, 24)
                 .padding(.vertical, 10)

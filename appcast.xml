@@ -6,6 +6,20 @@
     <description>bulgul 앱 자동 업데이트 피드</description>
     <language>ko</language>
     <item>
+      <title>버전 1.10</title>
+      <sparkle:version>11</sparkle:version>
+      <sparkle:shortVersionString>1.10</sparkle:shortVersionString>
+      <description><![CDATA[ macOS 12(Monterey)까지 지원하도록 최소 지원 버전 하향 (메뉴바/창 구현을 AppKit 기반으로 교체) ]]></description>
+      <pubDate>Thu, 17 Sep 2026 00:39:19 +0900</pubDate>
+      <enclosure
+        url="https://github.com/aidencjswo/bulgul_front/releases/download/v1.10/bulgul_front-1.10.dmg"
+        sparkle:version="11"
+        sparkle:shortVersionString="1.10"
+        length="2151799"
+        type="application/octet-stream"
+        sparkle:edSignature="YDjV4uCdzR1h4eJ8VOMH2AKZACzrRTDONlfrSV55DpsNnJlFQpTr0SEwTUVv7991M+I18C4qmNdR0DdnDexwCw==" />
+    </item>
+    <item>
       <title>버전 1.9</title>
       <sparkle:version>10</sparkle:version>
       <sparkle:shortVersionString>1.9</sparkle:shortVersionString>
