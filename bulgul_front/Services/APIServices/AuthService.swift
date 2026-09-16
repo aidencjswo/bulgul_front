@@ -14,7 +14,8 @@ class AuthService {
         return try await NetworkClient.shared.request(
             path: "/api/api_v1/auth/login",
             method: "POST",
-            body: LoginRequest(email: email, password: password)
+            body: LoginRequest(email: email, password: password),
+            requiresAuth: false
         )
     }
 

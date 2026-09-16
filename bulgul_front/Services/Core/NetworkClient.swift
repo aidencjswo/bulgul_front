@@ -63,12 +63,15 @@ class NetworkClient {
     }
 
     // 어떤 데이터 타입이든(Generics <T>) 받아서 처리하는 공통 함수
+    // requiresAuth: false면 401을 "세션 만료"가 아니라 그냥 일반 API 에러로 취급함
+    // (로그인 자체가 실패한 경우처럼, 아직 세션이랄 게 없는 요청에 사용)
     func request<T: Decodable>(
         path: String,
         method: String,
-        body: Encodable? = nil
+        body: Encodable? = nil,
+        requiresAuth: Bool = true
     ) async throws -> T {
-        let data = try await performRequest(path: path, method: method, body: body)
+        let data = try await performRequest(path: path, method: method, body: body, requiresAuth: requiresAuth)
         return try JSONDecoder().decode(T.self, from: data)
     }
 
@@ -77,9 +80,10 @@ class NetworkClient {
     func requestWithoutDecoding(
         path: String,
         method: String,
-        body: Encodable? = nil
+        body: Encodable? = nil,
+        requiresAuth: Bool = true
     ) async throws -> Data {
-        try await performRequest(path: path, method: method, body: body)
+        try await performRequest(path: path, method: method, body: body, requiresAuth: requiresAuth)
     }
 
     // 파일 하나를 원본 바이트 스트림으로 업로드 (onProgress: 0.0~1.0 진행률 콜백)
@@ -128,7 +132,8 @@ class NetworkClient {
     private func performRequest(
         path: String,
         method: String,
-        body: Encodable?
+        body: Encodable?,
+        requiresAuth: Bool = true
     ) async throws -> Data {
         // 1. URL 생성
         guard let url = URL(string: baseURL + path) else {
@@ -157,7 +162,8 @@ class NetworkClient {
         }
 
         // 4. 토큰 만료/무효화 공통 처리: 저장된 토큰을 지우고 재로그인 화면으로 보냄
-        if httpResponse.statusCode == 401 {
+        // (로그인처럼 애초에 세션이 없는 요청은 이 처리 대상이 아니라 아래 일반 에러 처리로 감)
+        if requiresAuth && httpResponse.statusCode == 401 {
             KeychainTokenStore().delete()
             NotificationCenter.default.post(name: .authTokenExpired, object: nil)
             throw URLError(.userAuthenticationRequired)

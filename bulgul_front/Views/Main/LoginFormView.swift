@@ -119,6 +119,11 @@ struct LoginFormView: View {
                         errorMessage = "로그인 정보가 올바르지 않습니다."
                     }
                 }
+            } catch let apiError as APIError where apiError.statusCode == 401 {
+                await MainActor.run {
+                    isLoading = false
+                    errorMessage = "아이디 또는 비밀번호를 다시 입력해주세요."
+                }
             } catch {
                 await MainActor.run {
                     isLoading = false

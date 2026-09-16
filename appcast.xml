@@ -6,6 +6,20 @@
     <description>bulgul 앱 자동 업데이트 피드</description>
     <language>ko</language>
     <item>
+      <title>버전 1.9</title>
+      <sparkle:version>10</sparkle:version>
+      <sparkle:shortVersionString>1.9</sparkle:shortVersionString>
+      <description><![CDATA[ Intel 맥북에서 실행 안 되던 문제 수정(유니버설 바이너리), 로그인 실패 메시지 개선 ]]></description>
+      <pubDate>Wed, 16 Sep 2026 23:45:16 +0900</pubDate>
+      <enclosure
+        url="https://github.com/aidencjswo/bulgul_front/releases/download/v1.9/bulgul_front-1.9.dmg"
+        sparkle:version="10"
+        sparkle:shortVersionString="1.9"
+        length="2160713"
+        type="application/octet-stream"
+        sparkle:edSignature="trWLx+nCTjNPGQTkluNODTfd7JtfJ9E070h/NWugY/yhU59ozEZ8zoFD4YyX8Y57BBi0ta4AksiezusPdqacDg==" />
+    </item>
+    <item>
       <title>버전 1.8</title>
       <sparkle:version>9</sparkle:version>
       <sparkle:shortVersionString>1.8</sparkle:shortVersionString>
